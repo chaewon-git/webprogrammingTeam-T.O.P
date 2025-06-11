@@ -11,8 +11,8 @@
     <div class="navbar">
       <div class="logo">에코빈</div>
       <div class="search-box">
-        <input type="text" placeholder="어떤 쓰레기를 버리실 건가요?">
-        <button>🔍</button>
+        <input id="search-input" type="text" placeholder="어떤 쓰레기를 버리실 건가요?">
+        <button id="search-button">🔍</button>
       </div>
       <nav class="menu">
         <a href="index.html">HOME</a>
@@ -20,15 +20,16 @@
         <a href="#">CATEGORY</a>
       </nav>
     </div>
+  </header>
+
+  <main>
     <div class="hero">
         <div class="hero-text">
           <p class="first">친환경을 위한 첫 걸음,</p>
           <p class="second">분리수거.</p>
         </div>
     </div>
-  </header>
 
-  <main>
     <section class="category-section">
       <div class="category">
         <h2>일반 🗑️</h2>
@@ -64,5 +65,21 @@
       </div>
     </section>
   </main>
+
+  <footer class="site-footer">
+    <div class="footer-content">
+      <p>&copy; 2025 Web Programming Project (주)에코빈</p>
+
+      <ul class="footer-links">
+        <li><a href="#">이용약관</a></li>
+        <li><a href="#">개인정보처리방침</a></li>
+        <li><a href="#">고객센터</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script src="recycle.js"></script>
+  <script src="script.js"></script>
+
 </body>
 </html>

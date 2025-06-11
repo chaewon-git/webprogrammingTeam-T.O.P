@@ -1,7 +1,4 @@
-
-const quizBox = document.getElementById("quizBox");
-const quizIndex = Math.floor(Math.random() * quizData.length);
-
+/*
 function showInfo(item) {
   const guide = {
     pet: "라벨을 제거하고 물로 헹군 후 투명 플라스틱으로 배출하세요.",
@@ -9,68 +6,95 @@ function showInfo(item) {
   };
   document.getElementById('info').innerText = guide[item];
 }
+*/
 
-// 퀴즈 렌더링
-function renderQuiz(index) {
-  const quiz = quizData[index];
-  let html = `
-    <h2>Q. ${quiz.question}</h2>
-    ${quiz.options
-      .map(
-        (opt, i) =>
-          `<div class="option">
-            <input type="radio" name="q" id="opt${i}" value="${i}">
-            <label for="opt${i}">${i + 1}) ${opt}</label>
-          </div>`
-      )
-      .join("")}
-    <button class="submit-btn" onclick="checkAnswer()">정답 확인</button>
-    <div id="result"></div>
-  `;
-  quizBox.innerHTML = html;
+
+// 검색 결과 표시
+function showItem(item) {
+    const itemName = document.getElementById("item-name");
+    const itemCategory = document.getElementById("item-category");
+
+    if (itemName) itemName.textContent = item.name;
+    if (itemCategory) itemCategory.textContent = item.category.join(", ");
 }
 
-// 정답 확인
-function checkAnswer() {
-  const selected = document.querySelector('input[name="q"]:checked');
-  const result = document.getElementById("result");
+// 검색
+function searchGarbage(queryParam) {
+    const query = queryParam || document.getElementById("search-input").value.trim();
 
-  if (!selected) {
-    result.innerText = "답을 선택해 주세요!";
-    result.style.color = "orange";
-    return;
-  }
+    if (!query) return;
 
-  if (parseInt(selected.value) === quizData[quizIndex].answer) {
-    result.innerText = "정답입니다! ✅";
-    result.style.color = "green";
-  } else {
-    const correct = quizData[quizIndex].answer + 1;
-    result.innerText = `틀렸습니다. 😢 정답은 ${correct}번입니다.`;
-    result.style.color = "red";
-  }
+    const lowerQuery = query.toLowerCase();
 
-  // 선택 후 버튼 비활성화
-  const options = document.querySelectorAll('input[name="q"]');
-  options.forEach(opt => {
-    opt.disabled = true;
-    opt.parentElement.style.pointerEvents = "none";
-  });
+    const found = garbageData.find(item => {
+        const nameMatch = item.name.toLowerCase().includes(lowerQuery);
+        const categoryMatch = item.category.some(cat => cat.toLowerCase().includes(lowerQuery));
+        return nameMatch || categoryMatch;
+    });
 
-  const submitBtn = document.querySelector(".submit-btn");
-  submitBtn.disabled = true;
-  const oldNextBtn = document.querySelector(".next-btn");
-  if (oldNextBtn) oldNextBtn.remove();
-  const nextQuizButton = document.createElement("button");
+    const guideTitle = document.querySelector(".guide-title");
+    const methodTitle = document.querySelector(".method-title");
+    const contentsContainer = document.getElementById("item-contents");
 
-  nextQuizButton.innerText = "다음 문제";
-  nextQuizButton.className = "next-btn";
-  nextQuizButton.onclick = loadNextQuiz;
-  result.after(nextQuizButton);
+    if (found) {
+      if (methodTitle) methodTitle.style.display = "block";
+      if (contentsContainer) {
+          contentsContainer.style.display = "block";
+          showItem(found);
+      }
+    } else {
+      if (methodTitle) methodTitle.style.display = "none";
+      if (contentsContainer) {
+          contentsContainer.innerHTML = "";
+          contentsContainer.style.display = "none";
+      }
+      if (guideTitle) {
+          guideTitle.innerHTML = `
+            <div class="not-found">${query}에 대한 검색 결과가 없습니다.</div>
+            <div class="not-found-sub">추가를 원하시면 고객센터로 문의해 주세요.</div>
+          `;
+      }
+    }
 }
-renderQuiz(quizIndex);
 
-function loadNextQuiz() {
-  const newIndex = Math.floor(Math.random() * quizData.length);
-  renderQuiz(newIndex);
-}
+//
+window.addEventListener("DOMContentLoaded", () => {
+    const searchInput = document.getElementById("search-input");
+    const searchButton = document.getElementById("search-button");
+
+    // recycle.html로 이동
+    if (searchButton && searchInput) {
+        searchButton.addEventListener("click", () => {
+            const query = searchInput.value.trim();
+            if (!query) {
+                alert("검색어를 입력해 주세요.");
+                return;
+            }
+            window.location.href = `recycle.html?query=${encodeURIComponent(query)}`;
+        });
+
+        searchInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                const query = searchInput.value.trim();
+                if (!query) {
+                    alert("검색어를 입력해 주세요.");
+                    return;
+                }
+                window.location.href = `recycle.html?query=${encodeURIComponent(query)}`;
+            }
+        });
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const query = params.get("query");
+    if (query) {
+        const interval = setInterval(() => {
+            // garbageData가 로드되었는지 확인
+            if (window.garbageData && window.garbageData.length > 0) {
+                clearInterval(interval);
+                if (searchInput) searchInput.value = query;
+                searchGarbage(query);
+            }
+        }, 100);
+    }
+});
