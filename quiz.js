@@ -11,7 +11,7 @@ const quizData = [
     answer: 2
   },
   {
-    question: "닭뼈는 무슨 쓰레기로 분류되는가?",
+    question: "닭 뼈는 무슨 쓰레기로 분류되는가?",
     options: [
       "일반 쓰레기",
       "음식물 쓰레기",
