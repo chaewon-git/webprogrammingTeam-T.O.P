@@ -355,10 +355,11 @@ const quizData = [
 
 
 const quizBox = document.getElementById("quizBox");
-const quizIndex = Math.floor(Math.random() * quizData.length);
+let currentIndex = null;
 
 // 퀴즈 렌더링
 function renderQuiz(index) {
+  currentIndex = index;
   const quiz = quizData[index];
   let html = `
     <h2>Q. ${quiz.question}</h2>
@@ -388,11 +389,11 @@ function checkAnswer() {
     return;
   }
 
-  if (parseInt(selected.value) === quizData[quizIndex].answer) {
+  if (parseInt(selected.value) === quizData[currentIndex].answer) {
     result.innerText = "정답입니다! ✅";
     result.style.color = "green";
   } else {
-    const correct = quizData[quizIndex].answer + 1;
+    const correct = quizData[currentIndex].answer + 1;
     result.innerText = `틀렸습니다. 😢 정답은 ${correct}번입니다.`;
     result.style.color = "red";
   }
@@ -415,7 +416,7 @@ function checkAnswer() {
   nextQuizButton.onclick = loadNextQuiz;
   result.after(nextQuizButton);
 }
-renderQuiz(quizIndex);
+renderQuiz(Math.floor(Math.random() * quizData.length));
 
 function loadNextQuiz() {
   const newIndex = Math.floor(Math.random() * quizData.length);
